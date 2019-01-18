@@ -33,5 +33,7 @@ Route::group(['middleware' => 'auth:api'], function(){
     Route::post('institution/getAuthority', 'OrganizationController@getAuthority');
     Route::post('institution/addIns', 'OrganizationController@addIns');
     Route::post('institution/updateIns', 'OrganizationController@updateIns');
+    Route::post('institution/getAuthority', 'OrganizationController@getAuthority');
+    
  
 });

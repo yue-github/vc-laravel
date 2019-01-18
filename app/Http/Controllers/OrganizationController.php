@@ -18,21 +18,13 @@ class OrganizationController extends Controller{
 	// private function getUserId(){
 	// 	$this->user_id=Auth::user();
 	// }
+
 	public function init(){
 		 date_default_timezone_set('PRC');
 	}
 	// 获取MyIns数据操作
 	public function getMyIns(){
 		$user_id=Auth::user()["id"];
-		
-		// 回复的数据
-		// {"myInss":[{"id":40,"insname":"小手机","contactname":"小手机","contacttel":"17633190977","contactadress":"小手机","mealtype":1,"userid":86,"created_at":"2018-10-06 15:40:20","updated_at":"2018-10-06 15:40:20","spacemenu":{"id":1,"name":"免费型"}},{"id":41,"insname":"测试机构","contactname":"联系人姓名","contacttel":"17633190977","contactadress":"测试地址","mealtype":1,"userid":86,"created_at":"2018-10-06 15:40:20","updated_at":"2018-10-06 15:40:20","spacemenu":{"id":1,"name":"免费型"}}],"byInviteInss":[]}
-
-		// $myInss=json_decode(DB::table('organization_institution')->where('user_id',$user_id)->get(),true);
-		// $spacemenu=json_decode(DB::table("spacemenu")->where('user_id',$user_id)->get(["id","name"]),true)[0];
-		// $byInviteInss=DB::table('byInviteInss')->where('user_id',$user_id)->get();
-		// $myInss["spacemenu"]=$spacemenu;
-		// $insArr=array('myInss'=>array($myInss),'byInviteInss'=>[]);
 		$spacemenu=DB::table("spacemenu")->where('user_id',$user_id)->get(["id","name"]);
 		// 更新表，便于统一查询输出
 		DB::table('organization_institution')->where('user_id',$user_id)->update(['spacemenu'=>$spacemenu]);
@@ -51,10 +43,7 @@ class OrganizationController extends Controller{
 		$arr=array('myInss'=>$myInss,'byInviteInss'=>$byInviteInss);
 		return json_encode($arr);
 	}
-	// 获取权限数据相关操作
-    public function getAuthority(){
-		echo "getAuthority";
-	}
+	
 	// 添加ins操作
 	public function addIns(Request $request){
 		$user_id=Auth::user()["id"];
@@ -67,7 +56,22 @@ class OrganizationController extends Controller{
 		$insertDate['mealtype']=1;
 		$is_success=DB::table('organization_institution')->where(['user_id'=>$user_id])->insert($insertDate);
 		if($is_success){
-			return response()->json(['status'=>200,'msg'=>'创建成功']);
+			// 成功后对权限进行默认添加
+		    $insertAuth=json_decode(DB::table('authority')->where('default',1)->get(),true);
+		    $insertAuth[0]['user_id']=$user_id;
+		    $maxId=DB::table('organization_institution')->max("id");
+		    $insertAuth[0]['ins_id']=$maxId;
+		    $insertAuth[0]['default']=0;
+
+			$authorityBoo=DB::table('authority')->insert($insertAuth);
+			if($authorityBoo){
+				return response()->json(['status'=>200,'msg'=>'创建成功']);
+			}else{
+				return response()->json(['status'=>503,'msg'=>'创建失败']);
+				// 添加不成功删除操作
+				DB::table('organization_institution')->where('id',$maxId)->delete();
+			};
+			
 		}else{
 			return response()->json(['status'=>503,'msg'=>'创建失败']);
 		}
@@ -76,9 +80,37 @@ class OrganizationController extends Controller{
 	}
     // 更新ins操作
 	public function updateIns(){
-
 		echo "updateIns";
 	}
+	// 获取权限数据相关操作
+	public function getAuthority(){
+		$user_id=Auth::user()["id"];
+		$authority=DB::table('authority')->where(['ins_id'=>request('insid'),'user_id'=>$user_id])->get();
+		return $authority;
+	}
+	// projectAdd: true,
+ //        projectDel: true,
+ //        projectEdit: true,
+ //        projectInfo: true,
+ //        fundAdd: true,
+ //        fundDel: true,
+ //        fundEdit: true,
+ //        fundInfo: true,
+ //        investorAdd: true,
+ //        investorDel: true,
+ //        investorEdit: true,
+ //        investorInfo: true,
+ //        fileUpload: true,
+ //        fileDown: true,
+ //        fileDel: true,
+ //        fileCreateDir: true,
+ //        roleUpdate: true,
+ //        roleAdd: true,
+ //        roleDel: true,
+ //        roleInvitation: true,
+ //        roleDelUser: true,
+ //        taskInfo: true,
+ //        taskAdd: true,
 
 }
 
