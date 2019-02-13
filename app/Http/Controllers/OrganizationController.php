@@ -85,8 +85,13 @@ class OrganizationController extends Controller{
 	// 获取权限数据相关操作
 	public function getAuthority(){
 		$user_id=Auth::user()["id"];
-		$authority=DB::table('authority')->where(['ins_id'=>request('insid'),'user_id'=>$user_id])->get();
-		return $authority;
+		$authority=json_decode(DB::table('authority')->where(['ins_id'=>request('insid'),'user_id'=>$user_id])->get(),true);
+		foreach ($authority as $key => $value) {
+			 foreach ($authority[$key] as $key_f => $value_f) {
+			 	 $authority[$key][$key_f]=$value_f==1?true:false;
+			 }
+		}
+		return json_encode($authority[0]);
 	}
 	// projectAdd: true,
  //        projectDel: true,

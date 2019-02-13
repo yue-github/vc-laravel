@@ -1,0 +1,62 @@
+							学习与问题总结
+关键字：清除缓存，让路径不写死
+
+1.php中mysq清除会话：session_start();$_SESSION=array();session_destroy();setcookie('PHPSESSID',"",time()-3600,"/")
+
+2.php多表查询："select brand.*,class.name cname from brand,class where brand.class_id=class.id";
+
+3.在数据库建表时。对于数字字段，其属性最好设为unsigned,若其值可能是负数，就不能设为unsigned.
+
+4.数据库分组聚合group by 表名.哪个字段。
+
+5.date_default_timezone_set('PRC');设置中国时区。
+
+6.$boo=mysql_fetch_assoc("$rst");注：mysql_fetch_assoc() 函数从结果集中取得一行作为关联数组。
+返回根据从结果集取得的行生成的关联数组，如果没有更多行，则返回 false。
+
+7.原生mysql更新语句-》update 表名 set 字段名=更改的内容 where 条件。
+
+8.原生mysql删除语句-》delete from indent where code='{}'；注意字段对应的值是否是字符串。
+
+9.原生mysql查询语句-》select * from user where username="{$username}" and password="{$password}" and isadmin=1
+
+10.md5（"加密内容"）；
+
+11.$path=$_SERVER["PHP_SELF"];$arr=explode("/",$path);其中explode是将字符串以什么进行分割成数组。路径不写死
+
+12、order by rand() limit 4 表示随机输出限制4条（数据库）；
+13、分页效果的思路-》通过数据库查询限制条数例如 select * from 表名 limit startPosition,how,
+其中startPosition表示开始查询的位置，how表示查询的条数；通过传的参数，例如传1，n那后台就从第一条开始查询，查询n条语句。
+前端点击事件，通过0*n+1进行初始位置确认。
+14.两表查询：select brand.* from brand,shop where shop.brand_id=brand.id;
+15.DB::table('users')
+        ->join('contacts', function ($join) {
+            $join->on('users.id', '=', 'contacts.user_id')
+                 ->where('contacts.user_id', '>', 8);
+        })
+        ->get();
+这句查询构造器的意思是从两表中关联查询，将查询到的每一条数据进行筛选通过条件contacts表的user_id字段进行约束，筛选最后结果。
+laravel中join的高级用法，可传一个闭包函数，其中闭包函数体内可添加约条件，其中就是列与值进行比较。
+16.$latestPosts = DB::table('posts')
+                   ->select('user_id', DB::raw('MAX(created_at) as last_post_created_at'))
+                   ->where('is_published', true)
+                   ->groupBy('user_id');
+
+$users = DB::table('users')
+        ->joinSub($latestPosts, 'latest_posts', function($join) {
+            $join->on('users.id', '=', 'latest_posts.user_id');
+        })->get();
+注：laravel中的人子连接查询；上面表示的意思为：从posts表中字段is_published值
+为true的记录中按字段user_id分组查询筛选出（或者输出）user_id字段和原生子查询出的posts表中
+created_at字段值最大并改名为last_post_created_at的字段，并通过查询的结果进一步查询。
+
+17.session有个特性，默认情况下，浏览器一关闭session会话就会过期
+
+18.购物车php部分逻辑实现-》通过将商品信息放入$_SESSIO超全局数组中，目的是为了浏览器关闭，购物车自动清0，其中有个问题，用户加入同一种商品，商品展示多出一行。
+解决方法-》将数组商品信息值对应的键，这个键设置为商品id就能够达到覆盖效果。
+19.intval(“17238”)字符串转数字，strval（364783）数字转字符串。
+
+
+
+
+

@@ -1,0 +1,15 @@
+							学习与问题总结
+
+1.laravel中$result=json_decode(DB::table('dashboard_syslog')->where([
+ 			['id','>',$pageSize*0],
+ 			['ins_id','=',$this->ins_id],
+ 			['user_id','=',$this->user_id]
+ 		])
+条件查询中，箭头数组和索引数组是不能共用的例如
+$result=json_decode(DB::table('dashboard_syslog')->where([
+ 			['id','>',$pageSize*0],
+ 			['ins_id'=>$this->ins_id]
+ 			 
+ 		])
+---------------------------------------------------
+2.项目数据库操作较复杂，需细心

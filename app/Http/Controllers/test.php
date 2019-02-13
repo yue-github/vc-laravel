@@ -12,11 +12,18 @@ use Illuminate\Support\Facades\Db;
 class Test extends Controller
 {
     public function test(){
-       $this->delete();
-       $this->insert();
+       // $this->delete();
+       // $this->insert();
        // $this->select();
        // $this->update();
        // $this->select();
+      // return $this->getRedux();
+      $this->getJustData();
+
+    }
+    public function getRedux(){
+      $result=DB::table('roles_auth_menu1')->get();
+      return $result;
     }
     public function insert(){
     	// 数据库插入
@@ -43,6 +50,10 @@ class Test extends Controller
     }
     public function update(){
     		DB::table("test_user")->where("age","18")->update(['name'=>"hello world"]);
+    }
+    public function getJustData(){
+      date_default_timezone_set('PRC');
+      echo date('Y-m-d H:i:s',time());
     }
 }
 

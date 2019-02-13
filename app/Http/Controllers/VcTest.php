@@ -7,9 +7,7 @@ use Illuminate\Support\Facades\Db;
 
 	class VcTest extends Controller{
 		function vc(){
-			 $user=DB::table("vc_test")->get();
-			return $user;
-			// echo "hello";
+			 echo 'vcTest';
 		}
 	}
 
